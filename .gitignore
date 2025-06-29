@@ -1,1 +1,4 @@
 tmp/
+.env
+docker/pgadmin/
+docker/postgres/pgdata/
