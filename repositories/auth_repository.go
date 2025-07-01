@@ -1,13 +1,16 @@
 package repositories
 
 import (
+	"errors"
 	"gin-fleamarket/models"
 
+	"github.com/davecgh/go-spew/spew"
 	"gorm.io/gorm"
 )
 
 type IAuthRepository interface {
 	CreateUser(user models.User) error
+	FindUser(email string) (*models.User, error)
 }
 
 type AuthRepository struct {
@@ -24,4 +27,17 @@ func (r *AuthRepository) CreateUser(user models.User) error {
 		return result.Error
 	}
 	return nil
+}
+
+func (r *AuthRepository) FindUser(email string) (*models.User, error) {
+	var user models.User
+	result := r.db.First(&user, "email=?", email)
+	if result.Error != nil {
+		spew.Dump(result.Error)
+		if result.Error.Error() == "record not found" {
+			return nil, errors.New("user not found")
+		}
+		return nil, result.Error
+	}
+	return &user, nil
 }
