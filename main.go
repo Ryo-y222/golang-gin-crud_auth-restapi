@@ -11,13 +11,10 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func main() {
-	infra.Initialize()
-	// log.Println(os.Getenv("ENV"))
-	db := infra.SetupDB()
-
+func setupRouter(db *gorm.DB) *gin.Engine {
 	// items := []models.Item{
 	// 	{ID: 1, Name: "商品1", Price: 1000, Description: "説明1", SoldOut: false},
 	// 	{ID: 2, Name: "商品2", Price: 2000, Description: "説明2", SoldOut: true},
@@ -48,5 +45,15 @@ func main() {
 
 	authRouter.POST("/signup", authController.Signup)
 	authRouter.POST("/login", authController.Login)
+
+	return r
+}
+
+func main() {
+	infra.Initialize()
+	// log.Println(os.Getenv("ENV"))
+	db := infra.SetupDB()
+	r := setupRouter(db)
+
 	r.Run("localhost:8080")
 }
